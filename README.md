@@ -31,4 +31,5 @@ format sd two partitions fat32
 * you could sh to the cam via telnet root/ismart12
 
 PS: 
-enjoy OpenSource
+
+Enjoy OpenSource
