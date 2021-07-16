@@ -4,7 +4,7 @@ echo "Content-type: text/html"
 echo ""
 
 cat << EOF
-<!DOCTYPE html>
+
 <html>
 <head>
 <title>Fang Hacks</title>
@@ -17,7 +17,7 @@ button, input[type=submit] { background-color: #ddeaff; }
 .tbl th { text-align: left; vertical-align: top; font-weight: bold; padding: 10px 5px; border-style: solid; border-width: 1px; overflow: hidden; word-break: normal; }
 .tbl td { padding: 10px 5px; border-style: solid; border-width: 1px; overflow: hidden; word-break: normal; }
 </style>
-</head>
+<head>
 <body>
 <div style="font-family: monospace, fixed; font-weight: bold;">
 <span style=";color:#55f">____</span><span>&#160;&#160;</span><span style=";color:#55f">__.__</span><span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</span><span style=";color:#00a">________</span><span style=";color:#aaa">___</span><span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</span><br />
@@ -39,22 +39,22 @@ button, input[type=submit] { background-color: #ddeaff; }
 <br/>
 </div>
 EOF
-HACKS_HOME="/media/mmcblk0p2/data"
+HACKS_HOME="/media/mpfc2/data"
 if [ -x "/etc/fang_hacks.sh" ]; then
    echo "Script is already installed!<br/>" 
-   if [ ! $(mount |grep /media/mmcblk0p2) ]; then
-       echo "<span class='err'>Error: Nothing is mounted on /media/mmcblk0p2!</span>"
+   if [ ! $(mount |grep /media/mpfc2) ]; then
+       echo "<span class='err'>Error: Nothing is mounted on /media/mpfc2!</span>"
        echo "<button title='Try to mount the hacks partition manually' type='button' onClick=\"window.location.href='action?cmd=manual_mount'\">Manual Mount</button>"
        echo "<br/>"
    elif [ ! -d "$HACKS_HOME" ]; then
-       echo "<span class='err'>Error: No 'data' directory found in /media/mmcblk0p2!</span>"
+       echo "<span class='err'>Error: No 'data' directory found in /media/mpfc2!</span>"
        echo "<br/>"
    else
        if [ -e "/etc/.resize_runonce" ]; then
          echo "<span class='err'>Reboot required to apply new partition layout!</span>"
          echo "<br/>"
        elif [ -e "$HACKS_HOME/.resize" ]; then
-         echo "Expand data partition (/media/mmcblk0p2)?"
+         echo "Expand data partition (/media/mpfc2)?"
          echo "<button title='Expand data partition' type='button' onClick=\"window.location.href='action?cmd=expandfs'\">Yes</button>"
          echo "<br/>"
        fi

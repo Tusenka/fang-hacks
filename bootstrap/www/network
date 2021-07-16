@@ -4,12 +4,12 @@ echo "Content-type: text/html"
 echo ""
 source func.cgi
 if [ -e "/etc/fang_hacks.cfg" ]; then source /etc/fang_hacks.cfg; fi
-PATH="/bin:/sbin:/usr/bin:/media/mmcblk0p2/data/bin:/media/mmcblk0p2/data/sbin:/media/mmcblk0p2/data/usr/bin"
+PATH="/bin:/sbin:/usr/bin:/media/mpfc2/data/bin:/media/mpfc2/data/sbin:/media/mpfc2/data/usr/bin"
 
 CFG_MODE="${NETWORK_MODE:-0}"
-CFG_CLIENT="/media/mmcblk0p2/data/etc/wpa_supplicant.conf"
-CFG_AP="/media/mmcblk0p2/data/etc/hostapd.conf"
-CFG_DHCPD="/media/mmcblk0p2/data/etc/udhcpd.conf"
+CFG_CLIENT="/media/mpfc2/data/etc/wpa_supplicant.conf"
+CFG_AP="/media/mpfc2/data/etc/hostapd.conf"
+CFG_DHCPD="/media/mpfc2/data/etc/udhcpd.conf"
 
 
 if [ -n "$F_action" ]; then
@@ -17,7 +17,7 @@ if [ -n "$F_action" ]; then
     connect)
       client_ssid=$(printf '%b' "${F_ssid//%/\\x}")
       client_key=$(printf '%b' "${F_key//%/\\x}")
-      ACTION_MSG="$(/media/mmcblk0p2/data/etc/scripts/01-network connect "$client_ssid" "$client_key")"
+      ACTION_MSG="$(/media/mpfc2/data/etc/scripts/01-network connect "$client_ssid" "$client_key")"
       ACTION_RC=$?
       CFG_MODE=1
       ;;
@@ -68,7 +68,7 @@ if [ -n "$F_action" ]; then
         sed -i.bak 's/^NETWORK_MODE=[0-9]/NETWORK_MODE='$CFG_MODE'/' /etc/fang_hacks.cfg
         ACTION_MSG="$ACTION_MSG<br/>Applying network mode $CFG_MODE"
         echo "Restarting Network..."
-        ACTION_MSG="$ACTION_MSG<br/><pre>$(/media/mmcblk0p2/data/etc/scripts/01-network start 2>&1)</pre>"
+        ACTION_MSG="$ACTION_MSG<br/><pre>$(/media/mpfc2/data/etc/scripts/01-network start 2>&1)</pre>"
       fi
       ;;
   esac
@@ -79,10 +79,10 @@ if [ -e "$CFG_CLIENT" ]; then
 fi
 
 cat << EOF
-<!DOCTYPE html>
 <html>
 <head>
 <title>Fang Hacks</title>
+<head>
 <style type="text/css">
 body { background-color: #B0E0E6; font-family: verdana, sans-serif; }
 .err { color: red; }
@@ -239,7 +239,7 @@ cat << EOF
 	
 window.onload = onLoad;
 </script>
-</head>
+
 <body>
 <h1>Network Settings</h1>
 <hr/>
@@ -280,10 +280,10 @@ echo "<option value='' disabled selected style='display:none;'>Label</option>"
 
 hidden=""
 while read x; do
-  SSID=$(echo "$x" | cut -f1)
-  ADDR=$(echo "$x" | cut -f2)
-  ENC=$(echo "$x" | cut -f3)
-  QUAL=$(echo "$x" | cut -f4)
+  SSID=$(echo $x | cut -d' ' -f1)
+  ADDR=$(echo $x | cut -d' ' -f2)
+  ENC=$(echo $x | cut -d' ' -f3)
+  QUAL=$(echo $x | cut -d' ' -f4)
   echo "<option id=\"${SSID}_OPT\">$SSID</option>"
   hidden="$hidden 
          <input type='hidden' id=\"${SSID}_QUAL\" value=\"$QUAL\"/> 
@@ -291,7 +291,7 @@ while read x; do
          <input type='hidden' id=\"${SSID}_ADDR\" value=\"$ADDR\"/>"
 
 done <<EOT
-$(iwlist wlan0 scan 2>/dev/null | /media/mmcblk0p1/bootstrap/iwlist.awk | sort -rgk4)
+$(iwlist wlan0 scan 2>/tmp/hack.log | /media/mpfc1/bootstrap/iwlist.awk | sort -rgk4)
 EOT
 echo "</select>"
 echo "$hidden"

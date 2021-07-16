@@ -1,0 +1,42 @@
+#!/bin/sh
+source "`dirname $0`"/profile
+PIDFILE="/var/run/rtsp-server.pid"
+
+status()
+{
+  pid="$(cat "$PIDFILE" 2>/dev/null)"
+  if [ "$pid" ]; then
+    kill -0 "$pid" >/dev/null && echo "PID: $pid" || return 1
+  fi
+}
+
+start()
+{
+  echo "Starting RTSP server..."
+  ls -l /dev
+  lsof | grep /dev/video | grep /dev/video0 | sed -n 1p
+  export pid=$(lsof | grep /dev/video0 | sed -n 1p | cut -d ' ' -f0)
+  echo $pid
+  kill $pid
+  "`dirname $0`"/snx_rtsp_server
+  echo "$!" > "$PIDFILE"
+}
+
+stop()
+{
+  pid="$(cat "$PIDFILE" 2>/dev/null)"
+  if [ "$pid" ]; then
+     kill $pid ||  rm "$PIDFILE"
+  fi
+}
+
+if [ $# -eq 0 ]; then
+  start
+else
+  case $1 in start|stop|status)
+    $1
+    ;;
+  esac
+fi
+
+

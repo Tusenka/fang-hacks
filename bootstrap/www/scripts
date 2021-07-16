@@ -4,10 +4,10 @@ echo "Content-type: text/html"
 echo ""
 source func.cgi
 cat << EOF
-<!DOCTYPE html>
 <html>
 <head>
 <title>Fang Hacks</title>
+<head>
 <style type="text/css">
 body { background-color: #B0E0E6; font-family: verdana, sans-serif; }
 .err { color: red; }
@@ -17,7 +17,6 @@ button, input[type=submit] { background-color: #ddeaff; }
 .tbl th { text-align: left; vertical-align: top; font-weight: bold; padding: 10px 5px; border-style: solid; border-width: 1px; overflow: hidden; word-break: normal; }
 .tbl td { padding: 10px 5px; border-style: solid; border-width: 1px; overflow: hidden; word-break: normal; }
 </style>
-</head>
 <body>
 <h1>Boot Scripts</h1>
 <hr/>
@@ -25,11 +24,19 @@ button, input[type=submit] { background-color: #ddeaff; }
 <button title='Reboot the device' type='button' onClick="window.location.href='action?cmd=reboot'">Reboot</button>
 <button title='Network' type='button' onClick="window.location.href='network'">Network</button>
 <button title='View /tmp/hacks.log' type='button' onClick="window.location.href='action?cmd=showlog'">View log</button>
+<form action="/action?cmd=showlog" id="usrform">
+  Name: <input type="text" name="usrname">
+  <input type="submit">
+  <textarea name="grna" form="usrform">Enter text here...</textarea>
+</form>
+
+
+<button title='View /tmp/hacks.log' type='button' onClick="window.location.href='action?cmd=showlog'">View log</button>
 <hr/>
 EOF
 
-SCRIPT_HOME="/media/mmcblk0p2/data/etc/scripts"
-source "/media/mmcblk0p2/data/etc/profile" >/dev/null 2>&1
+SCRIPT_HOME="/media/mpfc2/data/etc/scripts"
+source "/media/mpfc2/data/etc/profile" >>/tmp/hacks.log 2>&1
 if [ -n "$F_script" ]; then
   script="${F_script##*/}"
   if [ -e "$SCRIPT_HOME/$script" ]; then

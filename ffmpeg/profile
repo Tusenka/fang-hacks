@@ -1,0 +1,7 @@
+echo "Welcome to XiaoFang Hacks :-)"
+HACKS_HOME="/media/mpfc2/data"
+export PATH="$HACKS_HOME/bin:$HACKS_HOME/sbin:$HACKS_HOME/usr/bin:$(dirname $0)/usr:$HACKS_HOME/usr/sbin:/bin:/sbin:/usr/bin:/usr/sbin"
+export LD_LIBRARY_PATH="$HACKS_HOME/lib:$(dirname $0)/usr"
+export STREAM=""
+#cd "$HACKS_HOME"
+

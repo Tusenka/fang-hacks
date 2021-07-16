@@ -2,7 +2,7 @@
 
 source "/etc/fang_hacks.cfg"
 HACKS_ENABLED=${HACKS_ENABLED:-1}
-HACKS_HOME=${HACKS_HOME:-/media/mmcblk0p2/data}
+HACKS_HOME=${HACKS_HOME:-/media/mpfc2/data}
 
 logmsg()
 {
@@ -32,21 +32,21 @@ do_patch()
 
 do_resize()
 {
-  logmsg "Resizing /dev/mmcblk0p2"
-  mount /dev/mmcblk0p1 /media/mmcblk0p1 >/dev/null 2>&1
-  umount /dev/mmcblk0p2 >/dev/null 2>&1
-  resize2fs="/media/mmcblk0p1/bootstrap/resize2fs"
-  e2fsck="/media/mmcblk0p1/bootstrap/e2fsck"
+  logmsg "Resizing /dev/mpfc2"
+#  mount /dev/mpfc1 /media/mpfc1 >/tmp/hack.log 2>&1
+#  umount /dev/mpfc2 >/tmp/hack.log 2>&1
+  resize2fs="/media/mpfc1/bootstrap/resize2fs"
+  e2fsck="/media/mpfc1/bootstrap/e2fsck"
   rc=0
   if [ -x "$resize2fs" ]; then
-    $resize2fs -f /dev/mmcblk0p2 >/tmp/hacks.log 2>&1
+ #   $resize2fs -f /dev/mpfc2 >/tmp/hacks.log 2>&1
     rc=$?
   else
     echo "resize2fs not found!"
     rc=1
   fi
 
-  mount /dev/mmcblk0p2 /media/mmcblk0p2 >/dev/null 2>&1
+#  mount /dev/mpfc2 /media/mpfc2 >/tmp/hack.log 2>&1
   if [ -e "$HACKS_HOME/.resize" ]; then
     rm "$HACKS_HOME/.resize"
   fi
@@ -68,9 +68,9 @@ if [ "$DISABLE_CLOUD" -eq 0 ]; then
   count=0
   while [ $count -lt 30 ]; do
     if [ "$OS_MAJOR" -eq 3 ]; then
-      if pidof iCamera >/dev/null; then logmsg "iCamera is running!"; break; fi
+      if pidof iCamera >/tmp/hack.log; then logmsg "iCamera is running!"; break; fi
     elif [ "$OS_MAJOR" -eq 2 ]; then
-      if pidof iSC3S >/dev/null; then logmsg "iSC3S is running!"; break; fi
+      if pidof iSC3S >/tmp/hack.log; then logmsg "iSC3S is running!"; break; fi
     else 
       logmsg "Unsupported OS version $(cat /etc/os-release)"; break;
     fi
@@ -82,34 +82,34 @@ if [ "$DISABLE_CLOUD" -eq 0 ]; then
   # Wait for boa webserver
   count=0
   while [ $count -lt 30 ]; do
-    if pidof boa >/dev/null; then logmsg "Boa webserver is running!"; break; fi
+    if pidof boa >/tmp/hack.log; then logmsg "Boa webserver is running!"; break; fi
     count=$(expr $count + 1)
     sleep 1
   done
 
-  if ! pidof boa >/dev/null; then
+  if ! pidof boa >/tmp/hack.log; then
     # Something is wrong, perhaps cloud apps can't connect to wifi?
     # Start boa manually so cgi scripts can provide recovery options
     logmsg "Starting boa webserver..."
     # Copy to /tmp as a workaround for weird boa error (can't open boa.conf)
     cp /usr/boa/* /tmp
-    /tmp/boa >/dev/null 2>&1
+    /tmp/boa >/tmp/hack.log 2>&1
   fi
 
 else
   # Cloud disabled
   logmsg "Cloud apps are disabled"
-  if [ ! -d /media/mmcblk0p1 ]; then mkdir /media/mmcblk0p1; fi
-  logmsg "Mounting /media/mmcblk0p1"
-  mount /dev/mmcblk0p1 /media/mmcblk0p1
+  if [ ! -d /media/mpfc1 ]; then mkdir /media/mpfc1; fi
+  logmsg "Mounting /media/mpfc1"
+  #mount /dev/mpfc1 /media/mpfc1
   logmsg "Starting boa webserver..."
   # Copy to /tmp as a workaround for weird boa error (can't open boa.conf)
   cp /usr/boa/* /tmp
-  /tmp/boa >/dev/null 2>&1
+  /tmp/boa >/tmp/hack.log 2>&1
 fi
 
 # Link cgi files again if available (/tmp is volatile)
-CGI_FILES="/media/mmcblk0p1/bootstrap/www"
+CGI_FILES="/media/mpfc1/bootstrap/www"
 if [ -d "$CGI_FILES" ]; then
   for i in $CGI_FILES/*; do
     if [ ! -e "/tmp/www/cgi-bin/$(basename $i)" ]; then
@@ -136,7 +136,7 @@ if [ ! -d "$HACKS_HOME" -o ! -f "$HACKS_HOME/etc/profile" ]; then
    do_resize && rm /etc/.resize_runonce
   fi
 
-  mount /dev/mmcblk0p2 /media/mmcblk0p2 >> /tmp/hacks.log 2>&1
+  #mount /dev/mpfc2 /media/mpfc2 >> /tmp/hacks.log 2>&1
   if [ ! -d "$HACKS_HOME" -o ! -f "$HACKS_HOME/etc/profile" ]; then
     logmsg "Failed to find $HACKS_HOME!"
     return 1
@@ -149,29 +149,29 @@ elif [ -e /etc/.resize_runonce ]; then
 fi
   
 if [ -f "$HACKS_HOME/etc/profile" ]; then
-  source "$HACKS_HOME/etc/profile" >/dev/null
+  source "$HACKS_HOME/etc/profile" >/tmp/hack.log
 fi
 
 # Configuration files are located on vfat to allow off-line editing in any OS.
 # Note: originals are removed or they would overwrite any changes made in the webif,
 # each time the script runs!
 for i in wpa_supplicant.conf hostapd.conf udhcpd.conf; do
-  src="/media/mmcblk0p1/bootstrap/$i"
-  tgt="/media/mmcblk0p2/data/etc/$i"
-  if [ -e "/media/mmcblk0p1/bootstrap/$i" ]; then
+  src="/media/mpfc1/bootstrap/$i"
+  tgt="/media/mpfc2/data/etc/$i"
+  if [ -e "/media/mpfc1/bootstrap/$i" ]; then
     logmsg "Moving $i -> $tgt"
     mv "$src" "$tgt"
   fi
 done
 
-src="/media/mmcblk0p1/bootstrap/fang_hacks_rescue.cfg"
+src="/media/mpfc1/bootstrap/fang_hacks_rescue.cfg"
 tgt="/etc/fang_hacks.cfg"
 if [ -e "$src" ]; then
   logmsg "Overwriting configuration file $src -> $tgt"
   mv "$src" "$tgt"
 fi
 
-if ! type patch >/dev/null; then
+if ! type patch >/tmp/hack.log; then
   logmsg "Patch command not found! Patches will not be applied."
 else
   # todo: apply patches?

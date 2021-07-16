@@ -60,6 +60,7 @@ if [ $ACTION = "add" ]; then
 		mount -t vfat -o rw /dev/$MDEV /media/$MDEV
 		echo "1" > /tmp/$MDEV
 		mount -o remount,rw /dev/$MDEV
+		echo "find device" >> /tmp/hacks.log 2>&1
 		echo "1" > /tmp/guozhixin
 		if [ -f /media/$MDEV/snx_autorun.sh ]; then
 			echo "find snx_autorun.sh" > /dev/console
@@ -81,7 +82,7 @@ if [ $ACTION = "add" ]; then
 		fi
 		exit 0
 	fi
-	
+
 	grep -w $MDEV /tmp/mmc.ntfs.log
 	if [ $? == 0 ]; then
 		ntfs-3g /dev/$MDEV /media/$MDEV

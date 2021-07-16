@@ -5,7 +5,7 @@ _DEBUG_=
 
 if [ "${REQUEST_METHOD}" = "POST" ]
 then
-  POST_QUERY_STRING=`dd bs=1 count=${CONTENT_LENGTH} 2>/dev/null`
+  POST_QUERY_STRING=`dd bs=1 count=${CONTENT_LENGTH} 2 >> /tmp/hacks.log`
   if [ "${QUERY_STRING}" != "" ]
   then
       QUERY_STRING=${POST_QUERY_STRING}"&"${QUERY_STRING}
@@ -28,7 +28,7 @@ do
       echo value: `echo ${_VAR} | cut -d= -f2`
   fi
 
-  eval "`echo F_${_VAR} | cut -d= -f1`=`echo ${_VAR} | cut -d= -f2`"
+  eval "`echo F_${_VAR} | cut -d= -f1`=`echo ${_VAR} | cut -d= -f2`" >> /tmp/hacks.log
 
   if [ ${_DEBUG_} ]
   then
