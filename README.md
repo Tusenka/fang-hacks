@@ -29,3 +29,6 @@ format sd two partitions fat32
 * adjust secondary one to eliminate magic constants for partitions names
 * you could adjust your rtsp stream by /profile
 * you could sh to the cam via telnet root/ismart12
+
+PS: 
+enjoy OpenSource
